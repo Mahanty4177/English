@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -9,7 +10,6 @@ import {
   Volume1,
   VolumeX,
   Repeat,
-  Repeat1,
   Square,
   Music2,
 } from "lucide-react";
@@ -123,8 +123,15 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
       <audio ref={audioRef} src={src} preload="metadata" />
       <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-full p-2 shadow-lg">
           <div className="flex items-center gap-4 px-4 text-white">
-             <button onClick={togglePlayPause} className="p-2 rounded-full hover:bg-white/10 transition">
-              {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 fill-current" />}
+            <button
+              onClick={togglePlayPause}
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              {isPlaying ? (
+                <Pause className="w-5 h-5" />
+              ) : (
+                <Play className="w-5 h-5 fill-current" />
+              )}
             </button>
              <button onClick={stopPlayback} className="p-2 rounded-full hover:bg-white/10 transition" title="Stop">
                 <Square className="w-5 h-5 fill-current" />
@@ -153,23 +160,28 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
                 />
                 <span className="text-xs w-9 text-center font-mono text-gray-400">{formatTime(duration)}</span>
             </div>
-
+            
             <div className="flex items-center gap-2">
-                <div className="group flex items-center gap-2">
-                    <button onClick={() => setVolume(v => v > 0 ? 0 : 0.75)} className="p-2 rounded-full hover:bg-white/10 transition">
-                        <VolumeIcon className="w-5 h-5" />
-                    </button>
-                    <Slider
-                        value={[volume]}
-                        max={1}
-                        step={0.05}
-                        onValueChange={handleVolumeChange}
-                        className="w-24 hidden md:block"
-                    />
-                </div>
-                <button onClick={() => setIsLooping(!isLooping)} className={cn("p-2 rounded-full hover:bg-white/10 transition", isLooping && "bg-amber-400/20 text-amber-300")} title="Loop">
-                    <Repeat className="w-5 h-5" />
-                </button>
+              <button onClick={() => setVolume((v) => (v > 0 ? 0 : 0.75))} className="p-2 rounded-full hover:bg-white/10 transition">
+                <VolumeIcon className="w-5 h-5" />
+              </button>
+              <Slider
+                value={[volume]}
+                max={1}
+                step={0.05}
+                onValueChange={handleVolumeChange}
+                className="w-24 hidden md:block"
+              />
+              <button
+                onClick={() => setIsLooping(!isLooping)}
+                className={cn(
+                  "p-2 rounded-full hover:bg-white/10 transition",
+                  isLooping && "bg-amber-400/20 text-amber-300"
+                )}
+                title="Loop"
+              >
+                <Repeat className="w-5 h-5" />
+              </button>
             </div>
           </div>
       </div>

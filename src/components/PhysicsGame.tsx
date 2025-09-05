@@ -2,21 +2,19 @@
 "use client";
 
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './ui/button';
 import { CheckCircle, XCircle } from 'lucide-react';
 
 const levels = [
   {
     name: "Newton's Second Law",
-    formula: "F = m × a",
     equation: ['F', '=', 'm', '×', 'a'],
     parts: ['F', 'm', 'a'],
     distractors: ['v', 't'],
   },
   {
     name: 'Kinetic Energy',
-    formula: 'KE = ½mv²',
     equation: ['KE', '=', '½', 'm', 'v²'],
     parts: ['KE', 'm', 'v²'],
     distractors: ['a', 'F'],
@@ -24,12 +22,9 @@ const levels = [
 ];
 
 const DraggableItem = ({ item, onDrop }) => {
-  const controls = useDragControls();
-
   return (
     <motion.div
       drag
-      dragControls={controls}
       dragSnapToCenter={true}
       onDragEnd={(event, info) => onDrop(info, item)}
       whileHover={{ scale: 1.1, boxShadow: '0 0 15px rgba(255, 255, 255, 0.4)' }}
@@ -41,25 +36,15 @@ const DraggableItem = ({ item, onDrop }) => {
   );
 };
 
-const DropZone = ({ id, content, isFilled, isCorrect }) => {
+const DropZone = ({ id, content, isFilled }) => {
   const baseClasses = "w-20 h-20 md:w-24 md:h-24 rounded-lg flex items-center justify-center text-2xl md:text-3xl font-bold font-headline transition-all duration-300";
   const filledClasses = isFilled
     ? `bg-amber-400/20 border-amber-400 text-amber-200 shadow-lg scale-105`
     : `bg-black/20 border-dashed border-white/20 text-gray-500`;
 
-  let displayContent = content;
-  if (isFilled) {
-     if (isCorrect) {
-       displayContent = <CheckCircle className="text-green-400" />;
-     } else if(isCorrect === false) {
-       displayContent = <XCircle className="text-red-400" />;
-     }
-  }
-
-
   return (
     <div data-dropzone-id={id} className={`${baseClasses} ${filledClasses}`}>
-      {isFilled ? content : '?'}
+      {content || '?'}
     </div>
   );
 };
@@ -69,7 +54,6 @@ export default function PhysicsGame() {
   const [droppedItems, setDroppedItems] = useState({});
   const [feedback, setFeedback] = useState({});
   const [gameCompleted, setGameCompleted] = useState(false);
-  const [_, setDraggingItem] = useState(null);
 
   const currentLevel = levels[levelIndex];
   const draggableElements = useMemo(() => {
@@ -92,27 +76,20 @@ export default function PhysicsGame() {
   
     if (dropZone) {
       const dropZoneId = dropZone.getAttribute('data-dropzone-id');
-      const existingItemInZone = Object.entries(droppedItems).find(([key, value]) => key === dropZoneId);
-
-      if (existingItemInZone) {
-        // Zone is already occupied
-        // We can add logic to swap items if needed
-      } else {
+      if (!droppedItems[dropZoneId]) {
         const expectedItem = currentLevel.equation[parseInt(dropZoneId)];
-        
         setDroppedItems(prev => ({ ...prev, [dropZoneId]: item }));
         setFeedback(prev => ({ ...prev, [dropZoneId]: item === expectedItem }));
       }
     }
-    setDraggingItem(null); // Reset dragging state
   };
 
   const isLevelComplete = useMemo(() => {
     return currentLevel.parts.every(part => {
       const dropZoneIndex = currentLevel.equation.indexOf(part);
-      return droppedItems[dropZoneIndex] === part && feedback[dropZoneIndex] === true;
+      return droppedItems[dropZoneIndex] === part;
     });
-  }, [droppedItems, feedback, currentLevel]);
+  }, [droppedItems, currentLevel]);
 
 
   const handleNextLevel = () => {
@@ -129,6 +106,20 @@ export default function PhysicsGame() {
     setDroppedItems({});
     setFeedback({});
   };
+  
+  const getDropZoneContent = (index) => {
+    const droppedItem = droppedItems[index];
+    if (droppedItem) {
+      const isCorrect = feedback[index];
+      if (isCorrect) {
+        return <motion.div key="correct" initial={{scale:0.5, opacity: 0}} animate={{scale:1, opacity: 1}}><CheckCircle className="text-green-400" /></motion.div>;
+      } else if (isCorrect === false) {
+        return <motion.div key="incorrect" initial={{scale:0.5, opacity: 0}} animate={{scale:1, opacity: 1}}><XCircle className="text-red-400" /></motion.div>;
+      }
+      return droppedItem;
+    }
+    return '?';
+  }
 
   if (gameCompleted) {
     return (
@@ -170,10 +161,9 @@ export default function PhysicsGame() {
               return (
                 <DropZone
                   key={`${levelIndex}-${index}`}
-                  id={index}
+                  id={String(index)}
                   content={droppedItems[index] || '?'}
                   isFilled={!!droppedItems[index]}
-                  isCorrect={feedback[index]}
                 />
               );
             }

@@ -53,9 +53,6 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
     const setAudioTime = () => {
       setProgress(audio.currentTime);
     };
-    
-    audio.addEventListener("loadedmetadata", setAudioData);
-    audio.addEventListener("timeupdate", setAudioTime);
 
     const handleEnded = () => {
       if (!isLooping) {
@@ -66,7 +63,9 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
         audio.play();
       }
     };
-
+    
+    audio.addEventListener("loadedmetadata", setAudioData);
+    audio.addEventListener("timeupdate", setAudioTime);
     audio.addEventListener("ended", handleEnded);
 
     return () => {
@@ -74,7 +73,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
       audio.removeEventListener("timeupdate", setAudioTime);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [isLooping]);
+  }, [isLooping, isMounted]);
 
   useEffect(() => {
     if (audioRef.current) {

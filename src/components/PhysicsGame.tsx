@@ -42,10 +42,12 @@ export default function PhysicsGame() {
   }, []);
 
   useEffect(() => {
-    const all = [...currentLevel.parts, ...currentLevel.distractors];
-    setDraggableElements(all.sort(() => Math.random() - 0.5));
-    setDroppedItems({});
-  }, [levelIndex, currentLevel.parts, currentLevel.distractors]);
+    if (isClient) {
+      const all = [...currentLevel.parts, ...currentLevel.distractors];
+      setDraggableElements(all.sort(() => Math.random() - 0.5));
+      setDroppedItems({});
+    }
+  }, [levelIndex, currentLevel.parts, currentLevel.distractors, isClient]);
 
 
   const handleDrop = (index: number, item: string) => {
@@ -54,10 +56,23 @@ export default function PhysicsGame() {
 
   const isLevelComplete = useMemo(() => {
     if (Object.keys(droppedItems).length !== currentLevel.parts.length) return false;
-    return currentLevel.parts.every(part => {
+    
+    // Check that every part is in its correct place
+    for (const part of currentLevel.parts) {
       const index = currentLevel.equation.indexOf(part);
-      return droppedItems[index] === part;
-    });
+      if (droppedItems[index] !== part) {
+        return false;
+      }
+    }
+    
+    // Also check that no incorrect items have been dropped
+    for(const index in droppedItems) {
+      if(!currentLevel.equation.includes(droppedItems[index])) {
+         return false;
+      }
+    }
+    
+    return true;
   }, [droppedItems, currentLevel]);
 
   const handleNextLevel = () => {
@@ -144,7 +159,10 @@ export default function PhysicsGame() {
                         className={`w-20 h-20 md:w-24 md:h-24 rounded-lg flex items-center justify-center text-2xl md:text-3xl font-bold font-headline transition-all duration-300 ${bgClass}`}
                     >
                          {droppedItem ? (
-                           droppedItem
+                           <>
+                            {droppedItem}
+                            {isCorrect ? <CheckCircle className="absolute bottom-1 right-1 w-4 h-4 text-green-300" /> : <XCircle className="absolute bottom-1 right-1 w-4 h-4 text-red-300" /> }
+                           </>
                          ) : '?'}
                     </motion.div>
                 );
@@ -161,18 +179,18 @@ export default function PhysicsGame() {
         {/* The draggable elements */}
         <div className="flex flex-wrap items-center justify-center gap-4 mt-8 min-h-[100px]">
            {draggableElements.map(item => {
-              // Hide item if it's correctly placed
-              const isDropped = Object.values(droppedItems).includes(item);
+              const isUsed = Object.values(droppedItems).includes(item);
+              
+              if(isUsed) return null;
 
               return (
                 <motion.div
                     key={item}
-                    drag
+                    draggable
                     onDragStart={(e) => e.dataTransfer.setData('text/plain', item)}
                     whileHover={{ scale: 1.1, boxShadow: '0 0 15px rgba(255, 255, 255, 0.4)' }}
                     whileTap={{ scale: 0.9, cursor: 'grabbing' }}
                     className="w-16 h-16 md:w-20 md:h-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-lg md:text-xl font-bold font-headline text-amber-300 cursor-grab shadow-lg"
-                    style={{ display: isDropped ? 'none' : 'flex' }}
                 >
                     {item}
                 </motion.div>
@@ -210,3 +228,5 @@ export default function PhysicsGame() {
     </section>
   );
 }
+
+    

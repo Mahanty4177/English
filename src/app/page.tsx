@@ -46,7 +46,13 @@ export default function Home() {
           <CelebrationClient easterEggs={easterEggData.easterEggs} />
         )}
       </main>
-      {isClient && <MusicPlayer src="/background-music.mp3" />}
+      {/* 
+        To add your own music:
+        1. Create a 'public' folder in the root of your project.
+        2. Add your audio file (e.g., 'my-song.mp3') to the 'public' folder.
+        3. Update the 'src' prop below to point to your file (e.g., src="/my-song.mp3").
+      */}
+      {isClient && <MusicPlayer src="/your-song.mp3" />}
       {isClient && <ScriptHelpers />}
     </div>
   );

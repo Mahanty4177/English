@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        body: ['"PT Sans"', 'sans-serif'],
+        headline: ['"PT Sans"', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
@@ -88,10 +88,26 @@ export default {
             height: '0',
           },
         },
+        fall: {
+          '0%': { transform: 'translateY(-10vh) rotate(-20deg)', opacity: '1' },
+          '100%': { transform: 'translateY(110vh) rotate(20deg)', opacity: '0' },
+        },
+        glow: {
+          '0%, 100%': { filter: 'drop-shadow(0 0 3px hsl(var(--accent) / 0.9))' },
+          '50%': { filter: 'drop-shadow(0 0 10px hsl(var(--accent) / 0.9))' },
+        },
+        float: {
+          '0%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+          '100%': { transform: 'translateY(0px)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        fall: 'fall linear forwards',
+        glow: 'glow 3s ease-in-out infinite',
+        float: 'float 6s ease-in-out infinite',
       },
     },
   },

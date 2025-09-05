@@ -160,7 +160,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
                 </div>
             </div>
             
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="hidden items-center gap-1 sm:gap-2 md:flex">
               <button onClick={() => setVolume((v) => (v > 0 ? 0 : 0.75))} className="p-2 rounded-full hover:bg-white/10 transition">
                 <VolumeIcon className="w-5 h-5" />
               </button>
@@ -169,7 +169,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
                 max={1}
                 step={0.05}
                 onValueChange={handleVolumeChange}
-                className="w-20 sm:w-24 hidden md:block"
+                className="w-20 sm:w-24"
               />
               <button
                 onClick={() => setIsLooping(!isLooping)}

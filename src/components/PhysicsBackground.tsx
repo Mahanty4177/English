@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 
 const EQUATIONS = ["E = mc²", "F = ma", "λ = h/p", "PV = nRT", "∇⋅E = ρ/ε₀", "c = 299,792,458"];
-const PARTICLE_COUNT = 30;
-const EQUATION_COUNT = 15;
+const PARTICLE_COUNT = 50; // Increased particle count
+const EQUATION_COUNT = 10; // Decreased equation count for subtlety
 
 interface Element {
   id: number;
@@ -30,8 +30,8 @@ const PhysicsBackground = () => {
             top: `${Math.random() * 100}vh`,
             width: `${Math.random() * 2 + 1}px`,
             height: `${Math.random() * 2 + 1}px`,
-            animation: `float ${Math.random() * 10 + 5}s ease-in-out infinite, glow ${Math.random() * 4 + 3}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 5}s`,
+            animation: `float ${Math.random() * 12 + 8}s ease-in-out infinite, glow ${Math.random() * 5 + 4}s ease-in-out infinite`,
+            animationDelay: `${Math.random() * 8}s`,
           },
         });
       }
@@ -44,9 +44,10 @@ const PhysicsBackground = () => {
           content: EQUATIONS[Math.floor(Math.random() * EQUATIONS.length)],
           style: {
             left: `${Math.random() * 100}vw`,
-            fontSize: `${Math.random() * 0.5 + 0.75}rem`,
-            animation: `fall ${Math.random() * 10 + 10}s linear infinite`,
-            animationDelay: `${Math.random() * 15}s`,
+            fontSize: `${Math.random() * 0.4 + 0.65}rem`, // Made smaller
+            animation: `fall ${Math.random() * 15 + 15}s linear infinite`,
+            animationDelay: `${Math.random() * 20}s`,
+            opacity: 0.5, // Made more subtle
           },
         });
       }
@@ -64,7 +65,7 @@ const PhysicsBackground = () => {
           return (
             <div
               key={el.id}
-              className="absolute rounded-full bg-accent"
+              className="absolute rounded-full bg-accent/70" // More subtle
               style={el.style}
             />
           );
@@ -72,7 +73,7 @@ const PhysicsBackground = () => {
         return (
           <div
             key={el.id}
-            className="absolute text-primary/50"
+            className="absolute text-primary/30" // More subtle
             style={el.style}
           >
             {el.content}

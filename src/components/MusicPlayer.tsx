@@ -34,6 +34,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
   }, []);
 
   const formatTime = (time: number) => {
+    if (isNaN(time)) return "0:00";
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
@@ -118,14 +119,14 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
       <div className="flex items-center gap-4 bg-card/80 backdrop-blur-sm border border-primary/20 shadow-lg rounded-full px-4 py-2 text-card-foreground">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="rounded-full" onClick={togglePlayPause}>
-            {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+            {isPlaying ? <Pause className="w-5 h-5 text-primary" /> : <Play className="w-5 h-5 text-primary" />}
           </Button>
           <Button variant="ghost" size="icon" className="rounded-full" onClick={stopPlayback}>
             <Square className="w-5 h-5" />
           </Button>
         </div>
         <div className="flex-1 flex items-center gap-2">
-            <span className="text-xs w-9 text-center">{formatTime(progress)}</span>
+            <span className="text-xs w-9 text-center font-mono">{formatTime(progress)}</span>
             <Slider
                 value={[progress]}
                 max={duration || 100}
@@ -133,7 +134,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
                 onValueChange={handleProgressChange}
                 className="flex-1"
             />
-            <span className="text-xs w-9 text-center">{duration > 0 ? formatTime(duration) : '0:00'}</span>
+            <span className="text-xs w-9 text-center font-mono">{formatTime(duration)}</span>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setIsLooping(!isLooping)}>

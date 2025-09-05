@@ -2,11 +2,25 @@ import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { Inter, Poppins } from 'next/font/google';
 
 export const metadata: Metadata = {
   title: "Tribute to Pallab",
   description: "A special Teacher's Day tribute to Pallab Mukherjee.",
 };
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['600', '700'],
+  display: 'swap',
+  variable: '--font-poppins',
+});
 
 export default function RootLayout({
   children,
@@ -14,11 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className={`${inter.variable} ${poppins.variable} h-full`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
       </head>
       <body
         className={cn(

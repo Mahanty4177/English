@@ -100,14 +100,19 @@ export default function PhysicsGame() {
   };
 
   const isLevelComplete = useMemo(() => {
-    if (Object.keys(droppedItems).length !== currentLevel.parts.length) {
-      return false;
+    const correctParts = currentLevel.parts;
+    const droppedCorrectly = Object.keys(feedback).filter(key => feedback[key]);
+    
+    if (droppedCorrectly.length !== correctParts.length) {
+        return false;
     }
-    return currentLevel.parts.every(part => {
+    
+    return correctParts.every(part => {
       const dropZoneIndex = currentLevel.equation.indexOf(part);
-      return droppedItems[dropZoneIndex] === part;
+      return droppedItems[dropZoneIndex] === part && feedback[dropZoneIndex];
     });
-  }, [droppedItems, currentLevel]);
+
+  }, [droppedItems, feedback, currentLevel]);
 
 
   const handleNextLevel = () => {

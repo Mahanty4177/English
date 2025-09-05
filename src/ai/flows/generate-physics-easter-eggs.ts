@@ -45,7 +45,9 @@ const generatePhysicsEasterEggsPrompt = ai.definePrompt({
   output: {schema: GeneratePhysicsEasterEggsOutputSchema},
   prompt: `You are a creative assistant helping to generate engaging Easter egg content related to physics.
 
-  Generate {{numberOfEasterEggs}} unique Easter eggs containing physics jokes, messages, or links that would be appreciated by a physics teacher named Pallab Mukherjee. The generated content should be suitable to be hidden on a website as Easter eggs.
+  Generate {{numberOfEasterEggs}} unique Easter eggs containing physics jokes, messages, or links that would be appreciated by a physics teacher named Pallab sir. The generated content should be suitable to be hidden on a website as Easter eggs.
+
+  Do not address him as "Mr. Mukherjee" or "Pallab". Always refer to him as "Pallab sir". One of the messages should be: "Dear Pallab sir, you are the force that accelerated my life's trajectory. Happy Teacher's Day!"
 
   Return the Easter eggs as a JSON array of strings.`,
 });

@@ -57,7 +57,7 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
           Happy Teacher's Day!
         </h1>
         <h2 className="text-2xl md:text-4xl font-headline text-foreground/80">
-          To Our Esteemed Physics Teacher, Pallab Mukherjee
+          To my physics teacher Pallab sir
         </h2>
         <p className="max-w-2xl mx-auto text-foreground/70">
           Thank you for igniting our curiosity and illuminating the universe for us.

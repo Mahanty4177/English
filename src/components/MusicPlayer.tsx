@@ -45,7 +45,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
     if (!audio) return;
 
     const setAudioData = () => {
-      if (audio.duration !== Infinity) {
+      if (audio.duration !== Infinity && !isNaN(audio.duration)) {
         setDuration(audio.duration);
       }
     };
@@ -53,25 +53,35 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
     const setAudioTime = () => {
       setProgress(audio.currentTime);
     };
-
-    const handleEnded = () => {
-      if (!isLooping) {
-        setIsPlaying(false);
-      }
-    };
     
     audio.addEventListener("loadedmetadata", setAudioData);
     audio.addEventListener("timeupdate", setAudioTime);
-    audio.addEventListener("ended", handleEnded);
-    // Also check when src changes
     audio.addEventListener("durationchange", setAudioData);
-
 
     return () => {
       audio.removeEventListener("loadedmetadata", setAudioData);
       audio.removeEventListener("timeupdate", setAudioTime);
-      audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("durationchange", setAudioData);
+    };
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleEnded = () => {
+      if (!isLooping) {
+        setIsPlaying(false);
+        setProgress(0);
+      } else {
+        audio.currentTime = 0;
+        audio.play();
+      }
+    };
+
+    audio.addEventListener("ended", handleEnded);
+    return () => {
+      audio.removeEventListener("ended", handleEnded);
     };
   }, [isLooping]);
 
@@ -130,9 +140,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
 
   return (
     <footer className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-lg sm:bottom-6 sm:w-[92%] sm:max-w-3xl">
-      <audio ref={audioRef} src={src} preload="metadata" onLoadedMetadata={() => {
-        if (audioRef.current) setDuration(audioRef.current.duration);
-      }}/>
+      <audio ref={audioRef} src={src} preload="metadata"/>
       <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-full p-2 shadow-lg">
           <div className="flex items-center gap-2 sm:gap-4 px-2 sm:px-4 text-white">
             <button

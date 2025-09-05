@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, createRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './ui/button';
 import { CheckCircle, XCircle } from 'lucide-react';
@@ -25,7 +25,6 @@ const DraggableItem = ({ item, onDrop }) => {
   return (
     <motion.div
       drag
-      dragSnapToCenter={true}
       onDragEnd={(event, info) => onDrop(info, item)}
       whileHover={{ scale: 1.1, boxShadow: '0 0 15px rgba(255, 255, 255, 0.4)' }}
       whileTap={{ scale: 0.9, cursor: 'grabbing' }}
@@ -36,18 +35,29 @@ const DraggableItem = ({ item, onDrop }) => {
   );
 };
 
-const DropZone = ({ id, content, isFilled }) => {
+const DropZone = ({ id, content, isFilled, isCorrect, innerRef }) => {
   const baseClasses = "w-20 h-20 md:w-24 md:h-24 rounded-lg flex items-center justify-center text-2xl md:text-3xl font-bold font-headline transition-all duration-300";
-  const filledClasses = isFilled
-    ? `bg-amber-400/20 border-amber-400 text-amber-200 shadow-lg scale-105`
-    : `bg-black/20 border-dashed border-white/20 text-gray-500`;
+  
+  let contentToShow = '?';
+  let filledClasses = `bg-black/20 border-dashed border-white/20 text-gray-500`;
+
+  if (isFilled) {
+      if (isCorrect) {
+          contentToShow = content;
+          filledClasses = `bg-green-500/20 border-green-500 text-green-200 shadow-lg scale-105`;
+      } else {
+          contentToShow = <XCircle className="text-red-400" />;
+          filledClasses = `bg-red-500/20 border-red-500 text-red-200 shadow-lg scale-105`;
+      }
+  }
 
   return (
-    <div data-dropzone-id={id} className={`${baseClasses} ${filledClasses}`}>
-      {content || '?'}
+    <div ref={innerRef} data-dropzone-id={id} className={`${baseClasses} ${filledClasses}`}>
+      {contentToShow}
     </div>
   );
 };
+
 
 export default function PhysicsGame() {
   const [levelIndex, setLevelIndex] = useState(0);
@@ -62,10 +72,15 @@ export default function PhysicsGame() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [levelIndex]);
 
+  const dropZoneRefs = useRef(currentLevel.equation.map(() => createRef()));
+
+
   const handleDrop = (info, item) => {
-    const dropZones = Array.from(document.querySelectorAll('[data-dropzone-id]'));
-    const dropZone = dropZones.find(dz => {
-      const rect = dz.getBoundingClientRect();
+    const dropZoneElements = dropZoneRefs.current;
+    
+    const dropZoneIndex = dropZoneElements.findIndex(ref => {
+      if (!ref.current) return false;
+      const rect = ref.current.getBoundingClientRect();
       return (
         info.point.x >= rect.left &&
         info.point.x <= rect.right &&
@@ -73,11 +88,11 @@ export default function PhysicsGame() {
         info.point.y <= rect.bottom
       );
     });
-  
-    if (dropZone) {
-      const dropZoneId = dropZone.getAttribute('data-dropzone-id');
+    
+    if (dropZoneIndex > -1) {
+      const dropZoneId = String(dropZoneIndex);
       if (!droppedItems[dropZoneId]) {
-        const expectedItem = currentLevel.equation[parseInt(dropZoneId)];
+        const expectedItem = currentLevel.equation[dropZoneIndex];
         setDroppedItems(prev => ({ ...prev, [dropZoneId]: item }));
         setFeedback(prev => ({ ...prev, [dropZoneId]: item === expectedItem }));
       }
@@ -85,6 +100,9 @@ export default function PhysicsGame() {
   };
 
   const isLevelComplete = useMemo(() => {
+    if (Object.keys(droppedItems).length !== currentLevel.parts.length) {
+      return false;
+    }
     return currentLevel.parts.every(part => {
       const dropZoneIndex = currentLevel.equation.indexOf(part);
       return droppedItems[dropZoneIndex] === part;
@@ -97,6 +115,7 @@ export default function PhysicsGame() {
       setLevelIndex(prev => prev + 1);
       setDroppedItems({});
       setFeedback({});
+      dropZoneRefs.current = levels[levelIndex + 1].equation.map(() => createRef());
     } else {
       setGameCompleted(true);
     }
@@ -107,20 +126,6 @@ export default function PhysicsGame() {
     setFeedback({});
   };
   
-  const getDropZoneContent = (index) => {
-    const droppedItem = droppedItems[index];
-    if (droppedItem) {
-      const isCorrect = feedback[index];
-      if (isCorrect) {
-        return <motion.div key="correct" initial={{scale:0.5, opacity: 0}} animate={{scale:1, opacity: 1}}><CheckCircle className="text-green-400" /></motion.div>;
-      } else if (isCorrect === false) {
-        return <motion.div key="incorrect" initial={{scale:0.5, opacity: 0}} animate={{scale:1, opacity: 1}}><XCircle className="text-red-400" /></motion.div>;
-      }
-      return droppedItem;
-    }
-    return '?';
-  }
-
   if (gameCompleted) {
     return (
       <section className="w-full max-w-5xl mx-auto py-12 px-4 text-center">
@@ -162,8 +167,10 @@ export default function PhysicsGame() {
                 <DropZone
                   key={`${levelIndex}-${index}`}
                   id={String(index)}
-                  content={droppedItems[index] || '?'}
+                  content={droppedItems[index]}
                   isFilled={!!droppedItems[index]}
+                  isCorrect={feedback[index]}
+                  innerRef={dropZoneRefs.current[index]}
                 />
               );
             }

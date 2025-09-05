@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { Button } from './ui/button';
 import { CheckCircle, XCircle } from 'lucide-react';
 
@@ -23,11 +23,14 @@ const levels = [
   },
 ];
 
-const DraggableItem = ({ item, onDrop, onDragStart }) => {
+const DraggableItem = ({ item, onDrop }) => {
+  const controls = useDragControls();
+
   return (
     <motion.div
       drag
-      onDragStart={onDragStart}
+      dragControls={controls}
+      dragSnapToCenter={true}
       onDragEnd={(event, info) => onDrop(info, item)}
       whileHover={{ scale: 1.1, boxShadow: '0 0 15px rgba(255, 255, 255, 0.4)' }}
       whileTap={{ scale: 0.9, cursor: 'grabbing' }}
@@ -66,11 +69,13 @@ export default function PhysicsGame() {
   const [droppedItems, setDroppedItems] = useState({});
   const [feedback, setFeedback] = useState({});
   const [gameCompleted, setGameCompleted] = useState(false);
+  const [_, setDraggingItem] = useState(null);
 
   const currentLevel = levels[levelIndex];
   const draggableElements = useMemo(() => {
     const all = [...currentLevel.parts, ...currentLevel.distractors];
     return all.sort(() => Math.random() - 0.5);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [levelIndex]);
 
   const handleDrop = (info, item) => {
@@ -87,19 +92,28 @@ export default function PhysicsGame() {
   
     if (dropZone) {
       const dropZoneId = dropZone.getAttribute('data-dropzone-id');
-      const expectedItem = currentLevel.equation[dropZoneId];
-      
-      setDroppedItems(prev => ({ ...prev, [dropZoneId]: item }));
-      setFeedback(prev => ({ ...prev, [dropZoneId]: item === expectedItem }));
+      const existingItemInZone = Object.entries(droppedItems).find(([key, value]) => key === dropZoneId);
+
+      if (existingItemInZone) {
+        // Zone is already occupied
+        // We can add logic to swap items if needed
+      } else {
+        const expectedItem = currentLevel.equation[parseInt(dropZoneId)];
+        
+        setDroppedItems(prev => ({ ...prev, [dropZoneId]: item }));
+        setFeedback(prev => ({ ...prev, [dropZoneId]: item === expectedItem }));
+      }
     }
+    setDraggingItem(null); // Reset dragging state
   };
 
   const isLevelComplete = useMemo(() => {
     return currentLevel.parts.every(part => {
       const dropZoneIndex = currentLevel.equation.indexOf(part);
-      return droppedItems[dropZoneIndex] === part;
+      return droppedItems[dropZoneIndex] === part && feedback[dropZoneIndex] === true;
     });
-  }, [droppedItems, currentLevel]);
+  }, [droppedItems, feedback, currentLevel]);
+
 
   const handleNextLevel = () => {
     if (levelIndex < levels.length - 1) {
@@ -138,10 +152,10 @@ export default function PhysicsGame() {
     <section className="w-full max-w-5xl mx-auto py-12 px-4">
       <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 md:p-8">
         <h2 className="text-2xl md:text-3xl font-bold font-headline text-center text-primary">
-          F = ma Challenge
+          Physics Formula Challenge
         </h2>
         <p className="text-center text-gray-300 mt-2">
-          Drag the correct elements to form the formula for: <span className="font-semibold text-white">{currentLevel.name}</span>
+          Drag the elements to form the correct physics formula.
         </p>
 
         {/* The formula board */}
@@ -155,7 +169,7 @@ export default function PhysicsGame() {
             if (currentLevel.parts.includes(part)) {
               return (
                 <DropZone
-                  key={index}
+                  key={`${levelIndex}-${index}`}
                   id={index}
                   content={droppedItems[index] || '?'}
                   isFilled={!!droppedItems[index]}
@@ -174,12 +188,13 @@ export default function PhysicsGame() {
         {/* The draggable elements */}
         <div className="flex flex-wrap items-center justify-center gap-4 mt-8 min-h-[100px]">
           {draggableElements.map((item) => (
-            <DraggableItem
-              key={item}
-              item={item}
-              onDrop={handleDrop}
-              onDragStart={() => {}}
-            />
+            !Object.values(droppedItems).includes(item) && (
+              <DraggableItem
+                key={item}
+                item={item}
+                onDrop={handleDrop}
+              />
+            )
           ))}
         </div>
 

@@ -9,6 +9,7 @@ import MusicPlayer from '@/components/MusicPlayer';
 import type { GeneratePhysicsEasterEggsOutput } from '@/ai/flows/generate-physics-easter-eggs';
 import { Loader } from 'lucide-react';
 import ScriptHelpers from '@/components/ScriptHelpers';
+import PhysicsGame from '@/components/PhysicsGame';
 
 export default function Home() {
   const [easterEggData, setEasterEggData] = useState<GeneratePhysicsEasterEggsOutput>({ easterEggs: [] });
@@ -43,7 +44,10 @@ export default function Home() {
             </h1>
           </div>
         ) : (
-          <CelebrationClient easterEggs={easterEggData.easterEggs} />
+          <>
+            <CelebrationClient easterEggs={easterEggData.easterEggs} />
+            <PhysicsGame />
+          </>
         )}
       </main>
       {/* 

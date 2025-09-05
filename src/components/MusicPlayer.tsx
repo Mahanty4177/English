@@ -119,10 +119,10 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
   if (!isMounted) return null;
 
   return (
-    <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-3xl">
+    <footer className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-lg sm:bottom-6 sm:w-[92%] sm:max-w-3xl">
       <audio ref={audioRef} src={src} preload="metadata" />
       <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-full p-2 shadow-lg">
-          <div className="flex items-center gap-4 px-4 text-white">
+          <div className="flex items-center gap-2 sm:gap-4 px-2 sm:px-4 text-white">
             <button
               onClick={togglePlayPause}
               className="p-2 rounded-full hover:bg-white/20 transition-colors"
@@ -133,21 +133,21 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
                 <Play className="w-5 h-5 fill-current" />
               )}
             </button>
-             <button onClick={stopPlayback} className="p-2 rounded-full hover:bg-white/10 transition" title="Stop">
+             <button onClick={stopPlayback} className="hidden sm:block p-2 rounded-full hover:bg-white/10 transition" title="Stop">
                 <Square className="w-5 h-5 fill-current" />
             </button>
-            <div className="flex-1 flex items-center gap-4">
-                <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-12 h-12 rounded-md bg-gradient-to-br from-amber-400 to-pink-400 flex items-center justify-center text-black">
-                        <Music2 className="w-6 h-6"/>
+            <div className="flex-1 flex items-center gap-2 sm:gap-4">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-gradient-to-br from-amber-400 to-pink-400 flex items-center justify-center text-black shrink-0">
+                        <Music2 className="w-5 h-5 sm:w-6 sm:h-6"/>
                     </div>
-                    <div className="truncate">
+                    <div className="truncate hidden sm:block">
                         <div className="text-sm font-semibold">Tribute Music</div>
                         <div className="text-xs text-gray-300">A special track for Sir</div>
                     </div>
                 </div>
 
-                <div className="hidden md:flex flex-1 items-center gap-3">
+                <div className="flex-1 items-center gap-2 sm:gap-3 hidden md:flex">
                     <span className="text-xs w-9 text-center font-mono text-gray-400">{formatTime(progress)}</span>
                     <Slider
                         value={[progress]}
@@ -160,7 +160,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
                 </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <button onClick={() => setVolume((v) => (v > 0 ? 0 : 0.75))} className="p-2 rounded-full hover:bg-white/10 transition">
                 <VolumeIcon className="w-5 h-5" />
               </button>
@@ -169,7 +169,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
                 max={1}
                 step={0.05}
                 onValueChange={handleVolumeChange}
-                className="w-24 hidden md:block"
+                className="w-20 sm:w-24 hidden md:block"
               />
               <button
                 onClick={() => setIsLooping(!isLooping)}

@@ -46,7 +46,7 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
   }
   
   return (
-    <div className="w-full max-w-5xl mx-auto px-6 pt-20 pb-48">
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 pt-20 pb-48">
        <header className="text-center">
         <motion.h1
           initial={{ y: -30, opacity: 0 }}

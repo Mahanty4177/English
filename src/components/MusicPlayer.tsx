@@ -34,7 +34,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
   }, []);
 
   const formatTime = (time: number) => {
-    if (isNaN(time)) return "0:00";
+    if (isNaN(time) || time === 0) return "0:00";
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
@@ -154,7 +154,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
                         max={duration || 100}
                         step={1}
                         onValueChange={handleProgressChange}
-                        className="flex-1 [&>span>span]:bg-primary [&>span]:bg-white/20"
+                        className="flex-1"
                     />
                     <span className="text-xs w-9 text-center font-mono text-gray-400">{formatTime(duration)}</span>
                 </div>

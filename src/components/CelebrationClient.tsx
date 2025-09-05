@@ -141,7 +141,7 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
               <div className="text-sm text-gray-300">Click to reveal</div>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
+            <div className="mt-4 grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
               {easterEggs.map((egg, index) => {
                 const { Icon, color } = icons[index % icons.length];
                 return (
@@ -198,5 +198,3 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
 };
 
 export default CelebrationClient;
-
-    

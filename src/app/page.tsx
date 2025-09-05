@@ -32,7 +32,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
+    <div className="relative min-h-screen w-full overflow-x-hidden">
       {isClient && <PhysicsBackground />}
       <main className="relative z-10 flex flex-col items-center min-h-screen p-4">
         {isLoading ? (

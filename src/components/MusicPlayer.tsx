@@ -189,5 +189,3 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
 };
 
 export default MusicPlayer;
-
-    

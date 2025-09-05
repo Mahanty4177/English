@@ -1,87 +1,70 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
-const EQUATIONS = ["E = mc²", "F = ma", "λ = h/p", "PV = nRT", "∇⋅E = ρ/ε₀", "c = 299,792,458"];
-const PARTICLE_COUNT = 50; // Increased particle count
-const EQUATION_COUNT = 10; // Decreased equation count for subtlety
-
-interface Element {
-  id: number;
-  type: "particle" | "equation";
-  content?: string;
-  style: React.CSSProperties;
-}
+import { useEffect, useRef } from "react";
 
 const PhysicsBackground = () => {
-  const [elements, setElements] = useState<Element[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const generateElements = () => {
-      const newElements: Element[] = [];
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-      // Generate particles
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        newElements.push({
-          id: i,
-          type: "particle",
-          style: {
-            left: `${Math.random() * 100}vw`,
-            top: `${Math.random() * 100}vh`,
-            width: `${Math.random() * 2 + 1}px`,
-            height: `${Math.random() * 2 + 1}px`,
-            animation: `float ${Math.random() * 12 + 8}s ease-in-out infinite, glow ${Math.random() * 5 + 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 8}s`,
-          },
-        });
-      }
+    let w = (canvas.width = window.innerWidth);
+    let h = (canvas.height = window.innerHeight);
+    const particles: any[] = [];
 
-      // Generate equations
-      for (let i = 0; i < EQUATION_COUNT; i++) {
-        newElements.push({
-          id: PARTICLE_COUNT + i,
-          type: "equation",
-          content: EQUATIONS[Math.floor(Math.random() * EQUATIONS.length)],
-          style: {
-            left: `${Math.random() * 100}vw`,
-            fontSize: `${Math.random() * 0.4 + 0.65}rem`, // Made smaller
-            animation: `fall ${Math.random() * 15 + 15}s linear infinite`,
-            animationDelay: `${Math.random() * 20}s`,
-            opacity: 0.5, // Made more subtle
-          },
-        });
-      }
+    const rand = (min: number, max: number) => Math.random() * (max - min) + min;
 
-      setElements(newElements);
+    for (let i = 0; i < 80; i++) {
+      particles.push({
+        x: rand(0, w),
+        y: rand(0, h),
+        r: rand(0.6, 2.5),
+        vx: rand(-0.2, 0.2),
+        vy: rand(-0.15, 0.15),
+        alpha: rand(0.2, 0.9),
+      });
+    }
+
+    const resizeHandler = () => {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
     };
+    window.addEventListener("resize", resizeHandler);
 
-    generateElements();
+    let rafId: number;
+    function loop() {
+      ctx!.clearRect(0, 0, w, h);
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < -10) p.x = w + 10;
+        if (p.x > w + 10) p.x = -10;
+        if (p.y < -10) p.y = h + 10;
+        if (p.y > h + 10) p.y = -10;
+
+        ctx!.beginPath();
+        ctx!.globalAlpha = p.alpha;
+        const g = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 8);
+        g.addColorStop(0, "rgba(255,255,255,0.12)");
+        g.addColorStop(1, "rgba(10,20,40,0)");
+        ctx!.fillStyle = g;
+        ctx!.arc(p.x, p.y, p.r * 6, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+      rafId = requestAnimationFrame(loop);
+    }
+    loop();
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", resizeHandler);
+    };
   }, []);
 
-  return (
-    <div className="fixed inset-0 -z-10 overflow-hidden">
-      {elements.map((el) => {
-        if (el.type === "particle") {
-          return (
-            <div
-              key={el.id}
-              className="absolute rounded-full bg-accent/70" // More subtle
-              style={el.style}
-            />
-          );
-        }
-        return (
-          <div
-            key={el.id}
-            className="absolute text-primary/30" // More subtle
-            style={el.style}
-          >
-            {el.content}
-          </div>
-        );
-      })}
-    </div>
-  );
+  return <canvas ref={canvasRef} className="fixed inset-0 -z-10" />;
 };
 
 export default PhysicsBackground;

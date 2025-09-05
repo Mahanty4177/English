@@ -8,6 +8,7 @@ import CelebrationClient from '@/components/CelebrationClient';
 import MusicPlayer from '@/components/MusicPlayer';
 import type { GeneratePhysicsEasterEggsOutput } from '@/ai/flows/generate-physics-easter-eggs';
 import { Loader } from 'lucide-react';
+import ScriptHelpers from '@/components/ScriptHelpers';
 
 export default function Home() {
   const [easterEggData, setEasterEggData] = useState<GeneratePhysicsEasterEggsOutput>({ easterEggs: [] });
@@ -31,11 +32,11 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-background">
+    <div className="relative min-h-screen w-full overflow-hidden">
       {isClient && <PhysicsBackground />}
-      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4">
+      <main className="relative z-10 flex flex-col items-center min-h-screen p-4">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center h-screen">
             <Loader className="w-12 h-12 animate-spin text-primary" />
             <h1 className="text-2xl font-headline text-primary tracking-tight">
               Preparing Your Surprise...
@@ -46,6 +47,7 @@ export default function Home() {
         )}
       </main>
       {isClient && <MusicPlayer src="/background-music.mp3" />}
+      {isClient && <ScriptHelpers />}
     </div>
   );
 }

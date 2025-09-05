@@ -17,7 +17,7 @@ const inter = Inter({
 
 const poppins = Poppins({
   subsets: ['latin'],
-  weight: ['600', '700'],
+  weight: ['400','600', '700', '800'],
   display: 'swap',
   variable: '--font-poppins',
 });
@@ -33,7 +33,7 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          "min-h-screen bg-background font-body antialiased",
+          "min-h-screen bg-gradient-to-b from-[#050816] via-[#08102a] to-[#061226] text-white font-body antialiased",
         )}
       >
         {children}

@@ -11,8 +11,8 @@ import {
   Repeat,
   Repeat1,
   Square,
+  Music2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
@@ -81,12 +81,17 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
     }
   }, [isLooping]);
 
-  const togglePlayPause = () => {
-    if (isPlaying) {
-      audioRef.current?.pause();
-    } else {
-      audioRef.current?.play().catch(e => console.error("Playback failed:", e));
+  useEffect(() => {
+    if (audioRef.current) {
+      if(isPlaying) {
+        audioRef.current.play().catch(e => console.error("Playback failed:", e));
+      } else {
+        audioRef.current.pause();
+      }
     }
+  }, [isPlaying]);
+
+  const togglePlayPause = () => {
     setIsPlaying(!isPlaying);
   };
   
@@ -114,43 +119,59 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
   if (!isMounted) return null;
 
   return (
-    <footer className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-md">
+    <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-3xl">
       <audio ref={audioRef} src={src} preload="metadata" />
-      <div className="flex items-center gap-4 bg-card/80 backdrop-blur-sm border border-primary/20 shadow-lg rounded-full px-4 py-2 text-card-foreground">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="rounded-full" onClick={togglePlayPause}>
-            {isPlaying ? <Pause className="w-5 h-5 text-primary" /> : <Play className="w-5 h-5 text-primary" />}
-          </Button>
-          <Button variant="ghost" size="icon" className="rounded-full" onClick={stopPlayback}>
-            <Square className="w-5 h-5" />
-          </Button>
-        </div>
-        <div className="flex-1 flex items-center gap-2">
-            <span className="text-xs w-9 text-center font-mono">{formatTime(progress)}</span>
-            <Slider
-                value={[progress]}
-                max={duration || 100}
-                step={1}
-                onValueChange={handleProgressChange}
-                className="flex-1"
-            />
-            <span className="text-xs w-9 text-center font-mono">{formatTime(duration)}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setIsLooping(!isLooping)}>
-            {isLooping ? <Repeat1 className="w-5 h-5 text-primary" /> : <Repeat className="w-5 h-5" />}
-          </Button>
-          <div className="flex items-center gap-2 w-32 group">
-             <VolumeIcon className="w-5 h-5" />
-             <Slider
-                value={[volume]}
-                max={1}
-                step={0.05}
-                onValueChange={handleVolumeChange}
-                className="w-24 opacity-0 group-hover:opacity-100 transition-opacity"
-             />
+      <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-full p-2 shadow-lg">
+          <div className="flex items-center gap-4 px-4 text-white">
+             <button onClick={togglePlayPause} className="p-2 rounded-full hover:bg-white/10 transition">
+              {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 fill-current" />}
+            </button>
+             <button onClick={stopPlayback} className="p-2 rounded-full hover:bg-white/10 transition" title="Stop">
+                <Square className="w-5 h-5 fill-current" />
+            </button>
+
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-md bg-gradient-to-br from-amber-400 to-pink-400 flex items-center justify-center text-black">
+                        <Music2 className="w-6 h-6"/>
+                    </div>
+                    <div className="truncate">
+                        <div className="text-sm font-semibold">Tribute Music</div>
+                        <div className="text-xs text-gray-300">A special track for Sir</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="hidden md:flex flex-1 items-center gap-3">
+                <span className="text-xs w-9 text-center font-mono text-gray-400">{formatTime(progress)}</span>
+                <Slider
+                    value={[progress]}
+                    max={duration || 100}
+                    step={1}
+                    onValueChange={handleProgressChange}
+                    className="flex-1 [&>span>span]:bg-primary [&>span]:bg-white/20"
+                />
+                <span className="text-xs w-9 text-center font-mono text-gray-400">{formatTime(duration)}</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+                <div className="group flex items-center gap-2">
+                    <button onClick={() => setVolume(v => v > 0 ? 0 : 0.75)} className="p-2 rounded-full hover:bg-white/10 transition">
+                        <VolumeIcon className="w-5 h-5" />
+                    </button>
+                    <Slider
+                        value={[volume]}
+                        max={1}
+                        step={0.05}
+                        onValueChange={handleVolumeChange}
+                        className="w-24 hidden md:block"
+                    />
+                </div>
+                <button onClick={() => setIsLooping(!isLooping)} className={cn("p-2 rounded-full hover:bg-white/10 transition", isLooping && "bg-amber-400/20 text-amber-300")} title="Loop">
+                    <Repeat className="w-5 h-5" />
+                </button>
+            </div>
           </div>
-        </div>
       </div>
     </footer>
   );

@@ -93,9 +93,9 @@ export default function PhysicsGame() {
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8"
         >
-          <h2 className="text-3xl font-bold font-headline text-primary">Congratulations!</h2>
+          <h2 className="text-3xl font-bold font-headline text-primary">You are truly the master of the formulas!</h2>
           <p className="mt-4 text-lg text-gray-200">
-            You've mastered the formulas! Pallab Sir would be proud!
+            Pallab Sir, you are great!
           </p>
            <CheckCircle className="w-16 h-16 text-green-400 mx-auto mt-6"/>
         </motion.div>

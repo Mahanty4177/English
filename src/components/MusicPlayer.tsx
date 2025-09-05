@@ -138,7 +138,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
             </button>
             <div className="flex-1 flex items-center gap-2 sm:gap-4">
                 <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-gradient-to-br from-amber-400 to-pink-400 flex items-center justify-center text-black shrink-0">
+                    <div className="w-10 h-10 rounded-md bg-gradient-to-br from-amber-400 to-pink-400 flex items-center justify-center text-black shrink-0">
                         <Music2 className="w-5 h-5 sm:w-6 sm:h-6"/>
                     </div>
                     <div className="truncate hidden sm:block">
@@ -147,7 +147,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
                     </div>
                 </div>
 
-                <div className="flex-1 items-center gap-2 sm:gap-3 hidden md:flex">
+                <div className="flex-1 items-center gap-2 sm:gap-3 hidden sm:flex">
                     <span className="text-xs w-9 text-center font-mono text-gray-400">{formatTime(progress)}</span>
                     <Slider
                         value={[progress]}
@@ -189,3 +189,5 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
 };
 
 export default MusicPlayer;
+
+    

@@ -46,7 +46,7 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
   }
   
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 pt-20 pb-48">
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-48">
        <header className="text-center">
         <motion.h1
           initial={{ y: -30, opacity: 0 }}
@@ -62,7 +62,7 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="mt-6 max-w-2xl mx-auto text-gray-200"
+          className="mt-6 max-w-2xl mx-auto text-gray-200 text-base sm:text-lg"
         >
           This small website is my way of saying thank you on this special day.
         </motion.p>
@@ -71,7 +71,7 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
           initial={{y: 20, opacity: 0}}
           animate={{y: 0, opacity: 1}}
           transition={{delay: 0.8}}
-          className="mt-8 flex items-center justify-center gap-4">
+          className="mt-8 flex items-center justify-center gap-2 sm:gap-4 flex-wrap">
             <Button
               onClick={triggerConfetti}
               variant="outline"
@@ -98,7 +98,7 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="bg-white/5 backdrop-blur-lg border border-white/5 rounded-2xl p-6"
+            className="bg-white/5 backdrop-blur-lg border border-white/5 rounded-2xl p-4 sm:p-6"
           >
             <h2 className="text-2xl font-semibold font-headline text-primary">A Personal Tribute</h2>
             <p className="mt-4 text-gray-200 leading-relaxed">
@@ -134,14 +134,14 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="p-6 rounded-2xl bg-white/5 backdrop-blur-lg border border-white/5"
+            className="p-4 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-lg border border-white/5"
           >
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-semibold font-headline text-primary">Secret Surprises</h3>
               <div className="text-sm text-gray-300">Click to reveal</div>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
               {easterEggs.map((egg, index) => {
                 const { Icon, color } = icons[index % icons.length];
                 return (
@@ -177,7 +177,7 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true, amount: 0.5 }}
             transition={{ duration: 0.6 }}
-            className="inline-block p-8 rounded-3xl bg-gradient-to-br from-[#0b2340]/40 to-[#12304a]/30 border border-white/5"
+            className="inline-block p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#0b2340]/40 to-[#12304a]/30 border border-white/5"
           >
             <h3 className="text-2xl font-semibold font-headline text-primary">Thank you, Sir!</h3>
             <p className="mt-3 text-gray-200 max-w-xl">
@@ -198,3 +198,5 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
 };
 
 export default CelebrationClient;
+
+    

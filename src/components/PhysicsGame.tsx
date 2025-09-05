@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './ui/button';
 import { CheckCircle, XCircle, RefreshCw } from 'lucide-react';
@@ -27,45 +27,33 @@ const levels = [
   }
 ];
 
-const DraggableItem = ({ item, isDropped }) => {
-  return (
-    <motion.div
-      layoutId={item}
-      drag
-      dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-      dragElastic={0.8}
-      whileHover={{ scale: 1.1, boxShadow: '0 0 15px rgba(255, 255, 255, 0.4)' }}
-      whileTap={{ scale: 0.9, cursor: 'grabbing' }}
-      className="w-16 h-16 md:w-20 md:h-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-lg md:text-xl font-bold font-headline text-amber-300 cursor-grab shadow-lg z-10"
-      style={{ display: isDropped ? 'none' : 'flex' }}
-    >
-      {item}
-    </motion.div>
-  );
-};
-
 
 export default function PhysicsGame() {
   const [levelIndex, setLevelIndex] = useState(0);
-  // Stores the item dropped in each slot, e.g., { 0: 'F', 2: 'm', 3: 'a' }
-  const [droppedItems, setDroppedItems] = useState({});
+  const [droppedItems, setDroppedItems] = useState<{ [key: number]: string }>({});
   const [gameCompleted, setGameCompleted] = useState(false);
+  const [draggableElements, setDraggableElements] = useState<string[]>([]);
+  const [isClient, setIsClient] = useState(false);
 
   const currentLevel = levels[levelIndex];
-  const draggableElements = useMemo(() => {
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
     const all = [...currentLevel.parts, ...currentLevel.distractors];
-    return all.sort(() => Math.random() - 0.5);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [levelIndex]);
+    setDraggableElements(all.sort(() => Math.random() - 0.5));
+    setDroppedItems({});
+  }, [levelIndex, currentLevel.parts, currentLevel.distractors]);
 
-  const handleDrop = (index, item) => {
-    // If the slot is already filled with the correct item, do nothing
-    if (droppedItems[index] === currentLevel.equation[index]) return;
 
+  const handleDrop = (index: number, item: string) => {
     setDroppedItems(prev => ({ ...prev, [index]: item }));
   };
 
   const isLevelComplete = useMemo(() => {
+    if (Object.keys(droppedItems).length !== currentLevel.parts.length) return false;
     return currentLevel.parts.every(part => {
       const index = currentLevel.equation.indexOf(part);
       return droppedItems[index] === part;
@@ -75,7 +63,6 @@ export default function PhysicsGame() {
   const handleNextLevel = () => {
     if (levelIndex < levels.length - 1) {
       setLevelIndex(prev => prev + 1);
-      setDroppedItems({});
     } else {
       setGameCompleted(true);
     }
@@ -85,6 +72,18 @@ export default function PhysicsGame() {
     setDroppedItems({});
   };
   
+  if (!isClient) {
+    return (
+        <section className="w-full max-w-5xl mx-auto py-12 px-4">
+          <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 md:p-8 h-[400px]">
+            <h2 className="text-2xl md:text-3xl font-bold font-headline text-center text-primary">
+              Loading Physics Challenge...
+            </h2>
+          </div>
+       </section>
+    );
+  }
+  
   if (gameCompleted) {
     return (
       <section className="w-full max-w-5xl mx-auto py-12 px-4 text-center">
@@ -93,9 +92,9 @@ export default function PhysicsGame() {
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8"
         >
-          <h2 className="text-3xl font-bold font-headline text-primary">You are truly the master of the formulas!</h2>
+          <h2 className="text-3xl font-bold font-headline text-primary">You are truly the maste of the formulas! Pallab Sir you are great!</h2>
           <p className="mt-4 text-lg text-gray-200">
-            Pallab Sir, you are great!
+            Congratulations!
           </p>
            <CheckCircle className="w-16 h-16 text-green-400 mx-auto mt-6"/>
         </motion.div>
@@ -118,7 +117,7 @@ export default function PhysicsGame() {
           key={levelIndex}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-wrap items-center justify-center gap-2 md:gap-4 my-8 p-4 bg-black/20 rounded-xl"
+          className="flex flex-wrap items-center justify-center gap-2 md:gap-4 my-8 p-4 bg-black/20 rounded-xl min-h-[120px]"
         >
           {currentLevel.equation.map((part, index) => {
             const isDropZone = currentLevel.parts.includes(part);
@@ -137,6 +136,7 @@ export default function PhysicsGame() {
                     <motion.div
                         key={index}
                         onDrop={(e) => {
+                          e.preventDefault();
                           const data = e.dataTransfer.getData('text/plain');
                           handleDrop(index, data);
                         }}
@@ -144,7 +144,7 @@ export default function PhysicsGame() {
                         className={`w-20 h-20 md:w-24 md:h-24 rounded-lg flex items-center justify-center text-2xl md:text-3xl font-bold font-headline transition-all duration-300 ${bgClass}`}
                     >
                          {droppedItem ? (
-                           isCorrect ? droppedItem : <XCircle className="text-red-300" />
+                           droppedItem
                          ) : '?'}
                     </motion.div>
                 );
@@ -160,18 +160,23 @@ export default function PhysicsGame() {
         
         {/* The draggable elements */}
         <div className="flex flex-wrap items-center justify-center gap-4 mt-8 min-h-[100px]">
-           {draggableElements.map(item => (
+           {draggableElements.map(item => {
+              // Hide item if it's correctly placed
+              const isDropped = Object.values(droppedItems).includes(item);
+
+              return (
                 <motion.div
                     key={item}
-                    draggable
+                    drag
                     onDragStart={(e) => e.dataTransfer.setData('text/plain', item)}
                     whileHover={{ scale: 1.1, boxShadow: '0 0 15px rgba(255, 255, 255, 0.4)' }}
                     whileTap={{ scale: 0.9, cursor: 'grabbing' }}
                     className="w-16 h-16 md:w-20 md:h-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-lg md:text-xl font-bold font-headline text-amber-300 cursor-grab shadow-lg"
+                    style={{ display: isDropped ? 'none' : 'flex' }}
                 >
                     {item}
                 </motion.div>
-            ))}
+            )})}
         </div>
 
         <AnimatePresence>
@@ -205,5 +210,3 @@ export default function PhysicsGame() {
     </section>
   );
 }
-
-    

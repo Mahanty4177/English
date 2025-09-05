@@ -60,7 +60,7 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
           To my physics teacher Pallab sir
         </h2>
         <p className="max-w-2xl mx-auto text-foreground/70">
-          Thank you for igniting our curiosity and illuminating the universe for us.
+          Thank you for igniting my curiosity and illuminating the universe to me.
           Click on the floating icons to find some hidden surprises!
         </p>
       </div>

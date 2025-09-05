@@ -125,7 +125,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
           <div className="flex items-center gap-4 px-4 text-white">
             <button
               onClick={togglePlayPause}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              className="p-2 rounded-full hover:bg-white/20 transition-colors"
             >
               {isPlaying ? (
                 <Pause className="w-5 h-5" />
@@ -136,9 +136,8 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
              <button onClick={stopPlayback} className="p-2 rounded-full hover:bg-white/10 transition" title="Stop">
                 <Square className="w-5 h-5 fill-current" />
             </button>
-
-            <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3">
+            <div className="flex-1 flex items-center gap-4">
+                <div className="flex items-center gap-3 min-w-0">
                     <div className="w-12 h-12 rounded-md bg-gradient-to-br from-amber-400 to-pink-400 flex items-center justify-center text-black">
                         <Music2 className="w-6 h-6"/>
                     </div>
@@ -147,18 +146,18 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
                         <div className="text-xs text-gray-300">A special track for Sir</div>
                     </div>
                 </div>
-            </div>
 
-            <div className="hidden md:flex flex-1 items-center gap-3">
-                <span className="text-xs w-9 text-center font-mono text-gray-400">{formatTime(progress)}</span>
-                <Slider
-                    value={[progress]}
-                    max={duration || 100}
-                    step={1}
-                    onValueChange={handleProgressChange}
-                    className="flex-1 [&>span>span]:bg-primary [&>span]:bg-white/20"
-                />
-                <span className="text-xs w-9 text-center font-mono text-gray-400">{formatTime(duration)}</span>
+                <div className="hidden md:flex flex-1 items-center gap-3">
+                    <span className="text-xs w-9 text-center font-mono text-gray-400">{formatTime(progress)}</span>
+                    <Slider
+                        value={[progress]}
+                        max={duration || 100}
+                        step={1}
+                        onValueChange={handleProgressChange}
+                        className="flex-1 [&>span>span]:bg-primary [&>span]:bg-white/20"
+                    />
+                    <span className="text-xs w-9 text-center font-mono text-gray-400">{formatTime(duration)}</span>
+                </div>
             </div>
             
             <div className="flex items-center gap-2">

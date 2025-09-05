@@ -1,18 +1,49 @@
+
+"use client";
+
+import { useState, useEffect } from 'react';
 import { generatePhysicsEasterEggs } from '@/ai/flows/generate-physics-easter-eggs';
 import PhysicsBackground from '@/components/PhysicsBackground';
 import CelebrationClient from '@/components/CelebrationClient';
 import MusicPlayer from '@/components/MusicPlayer';
+import type { GeneratePhysicsEasterEggsOutput } from '@/ai/flows/generate-physics-easter-eggs';
 
-export default async function Home() {
-  const easterEggData = await generatePhysicsEasterEggs({ numberOfEasterEggs: 6 });
+export default function Home() {
+  const [easterEggData, setEasterEggData] = useState<GeneratePhysicsEasterEggsOutput>({ easterEggs: [] });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const fetchEasterEggs = async () => {
+      try {
+        const data = await generatePhysicsEasterEggs({ numberOfEasterEggs: 6 });
+        setEasterEggData(data);
+      } catch (error) {
+        console.error("Failed to fetch easter eggs:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEasterEggs();
+  }, []);
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      <PhysicsBackground />
+      {isClient && <PhysicsBackground />}
       <main className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 text-center">
-        <CelebrationClient easterEggs={easterEggData.easterEggs} />
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <h1 className="text-4xl md:text-6xl font-bold text-primary tracking-tight">
+              Loading Celebration...
+            </h1>
+          </div>
+        ) : (
+          <CelebrationClient easterEggs={easterEggData.easterEggs} />
+        )}
       </main>
-      <MusicPlayer src="/background-music.mp3" />
+      {isClient && <MusicPlayer src="/background-music.mp3" />}
     </div>
   );
 }

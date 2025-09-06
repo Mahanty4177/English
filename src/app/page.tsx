@@ -9,7 +9,7 @@ import MusicPlayer from '@/components/MusicPlayer';
 import type { GenerateEnglishEasterEggsOutput } from '@/ai/flows/generate-english-easter-eggs';
 import { Loader } from 'lucide-react';
 import ScriptHelpers from '@/components/ScriptHelpers';
-import EnglishGame from '@/components/EnglishGame';
+import WordCircleGame from '@/components/WordCircleGame';
 
 export default function Home() {
   const [easterEggData, setEasterEggData] = useState<GenerateEnglishEasterEggsOutput>({ easterEggs: [] });
@@ -46,7 +46,7 @@ export default function Home() {
         ) : (
           <>
             <CelebrationClient easterEggs={easterEggData.easterEggs} />
-            <EnglishGame />
+            <WordCircleGame />
           </>
         )}
       </main>

@@ -72,29 +72,37 @@ const WordCircleGame = () => {
         setFeedback(null);
     };
 
-    const handleMouseMove = (e: React.MouseEvent) => {
+    const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
         if (svgRef.current) {
             const rect = svgRef.current.getBoundingClientRect();
+            const touch = 'touches' in e ? e.touches[0] : null;
+            const clientX = touch ? touch.clientX : (e as React.MouseEvent).clientX;
+            const clientY = touch ? touch.clientY : (e as React.MouseEvent).clientY;
+
             setMousePos({
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top,
+                x: clientX - rect.left,
+                y: clientY - rect.top,
             });
         }
     };
     
     return (
         <section className="w-full max-w-5xl mx-auto py-12 px-4">
-            <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 md:p-8">
+            <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-4 sm:p-6 md:p-8">
                 <h2 className="text-2xl md:text-3xl font-bold font-headline text-center text-primary">
                     Make It So - Word Circle
                 </h2>
-                <p className="text-center text-gray-300 mt-2 mb-8">
+                <p className="text-center text-gray-300 mt-2 mb-6 md:mb-8">
                     Connect the letters to form words. Find all {level.words.length} words to win!
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                     {/* Game Circle */}
-                    <div className="relative aspect-square max-w-[400px] mx-auto w-full" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+                    <div 
+                        className="relative aspect-square max-w-[300px] sm:max-w-[400px] mx-auto w-full" 
+                        onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
+                        onTouchMove={handleMouseMove} onTouchEnd={handleMouseUp}
+                    >
                         {isClient && (
                         <>
                         <svg ref={svgRef} className="w-full h-full" viewBox="0 0 300 300">
@@ -112,14 +120,15 @@ const WordCircleGame = () => {
                         </svg>
                         {level.letters.map((letter, i) => {
                             const angle = (i / level.letters.length) * 2 * Math.PI - Math.PI / 2;
-                            const x = 150 + 120 * Math.cos(angle);
-                            const y = 150 + 120 * Math.sin(angle);
+                            const radius = 120;
+                            const x = 150 + radius * Math.cos(angle);
+                            const y = 150 + radius * Math.sin(angle);
                             letterPositions.current[i] = { x, y };
                             
                             return (
                                 <motion.div
                                     key={i}
-                                    className="absolute w-16 h-16 rounded-full bg-slate-800 border-2 border-amber-300/40 flex items-center justify-center text-2xl font-bold text-amber-200 cursor-pointer select-none"
+                                    className="absolute w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-800 border-2 border-amber-300/40 flex items-center justify-center text-xl sm:text-2xl font-bold text-amber-200 cursor-pointer select-none"
                                     style={{
                                         left: x,
                                         top: y,
@@ -128,6 +137,7 @@ const WordCircleGame = () => {
                                     }}
                                     onMouseDown={() => handleMouseDown(i)}
                                     onMouseEnter={() => handleMouseEnter(i)}
+                                    onTouchStart={() => handleMouseDown(i)}
                                     whileHover={{ scale: 1.1, boxShadow: '0 0 15px hsl(var(--primary))' }}
                                     whileTap={{ scale: 0.9 }}
                                 >
@@ -140,14 +150,14 @@ const WordCircleGame = () => {
                     </div>
 
                     {/* Words List */}
-                    <div className="bg-slate-800/50 rounded-lg p-4 h-[400px] flex flex-col">
+                    <div className="bg-slate-800/50 rounded-lg p-4 h-[350px] sm:h-[400px] flex flex-col">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-headline text-xl text-primary">Found Words ({foundWords.length}/{level.words.length})</h3>
+                            <h3 className="font-headline text-lg sm:text-xl text-primary">Found Words ({foundWords.length}/{level.words.length})</h3>
                             <Button variant="ghost" size="sm" onClick={() => { setFoundWords([]); resetCurrentAttempt(); }}>
                                 <RefreshCw className="w-4 h-4 mr-2" /> Reset
                             </Button>
                         </div>
-                        <div className="flex items-center justify-center h-12 bg-slate-900 rounded-md mb-4 text-2xl font-bold tracking-widest text-white/90">
+                        <div className="flex items-center justify-center h-12 bg-slate-900 rounded-md mb-4 text-xl sm:text-2xl font-bold tracking-widest text-white/90 min-h-[48px]">
                             {currentWord}
                             <AnimatePresence>
                                {feedback === 'correct' && <motion.div initial={{scale:0}} animate={{scale:1}} className="ml-2 text-green-400"><CheckCircle /></motion.div>}

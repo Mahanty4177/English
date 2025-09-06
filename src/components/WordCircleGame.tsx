@@ -99,7 +99,7 @@ const WordCircleGame = () => {
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                     {/* Game Circle */}
                     <div 
-                        className="relative aspect-square max-w-[300px] sm:max-w-[400px] mx-auto w-full" 
+                        className="relative aspect-square max-w-[300px] sm:max-w-[400px] mx-auto w-full touch-none" 
                         onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
                         onTouchMove={handleMouseMove} onTouchEnd={handleMouseUp}
                     >

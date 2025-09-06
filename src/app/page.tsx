@@ -50,7 +50,7 @@ export default function Home() {
           </>
         )}
       </main>
-      {isClient && <MusicPlayer src="/Physics Ki Duniya.mp3" />}
+      {isClient && <MusicPlayer src="/English 2.mp3" />}
       {isClient && <ScriptHelpers />}
     </div>
   );

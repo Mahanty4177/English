@@ -160,6 +160,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
 
                 <div className="flex-1 items-center gap-2 sm:gap-3 hidden sm:flex">
                     <span className="text-xs w-9 text-center font-mono text-gray-400">{formatTime(progress)}</span>
+                    {isMounted && (
                      <Slider
                         min={0}
                         max={duration || 100}
@@ -167,6 +168,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
                         onValueChange={handleProgressChange}
                         className="w-full"
                     />
+                    )}
                     <span className="text-xs w-9 text-center font-mono text-gray-400">{formatTime(duration)}</span>
                 </div>
             </div>
@@ -175,6 +177,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
               <button onClick={() => setVolume((v) => (v > 0 ? 0 : 0.75))} className="p-2 rounded-full hover:bg-white/10 transition">
                 <VolumeIcon className="w-5 h-5" />
               </button>
+              {isMounted && (
               <Slider
                   min={0}
                   max={1}
@@ -183,6 +186,7 @@ const MusicPlayer = ({ src }: MusicPlayerProps) => {
                   onValueChange={handleVolumeChange}
                   className="w-20 sm:w-24"
               />
+              )}
               <button
                 onClick={() => setIsLooping(!isLooping)}
                 className={cn(
@@ -204,3 +208,4 @@ export default MusicPlayer;
     
 
     
+

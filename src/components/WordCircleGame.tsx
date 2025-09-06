@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './ui/button';
 import { CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 
@@ -25,6 +25,11 @@ const WordCircleGame = () => {
     const svgRef = useRef<SVGSVGElement>(null);
     const letterPositions = useRef<Array<{ x: number; y: number }>>([]);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const currentWord = useMemo(() => path.map(i => level.letters[i]).join(''), [path, level.letters]);
     
@@ -52,7 +57,7 @@ const WordCircleGame = () => {
         if (level.words.includes(currentWord) && !foundWords.includes(currentWord)) {
             setFoundWords(prev => [...prev, currentWord].sort((a,b) => a.length - b.length || a.localeCompare(b)));
             setFeedback('correct');
-        } else {
+        } else if (currentWord.length > 0) {
             setFeedback('incorrect');
         }
         
@@ -90,6 +95,8 @@ const WordCircleGame = () => {
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                     {/* Game Circle */}
                     <div className="relative aspect-square max-w-[400px] mx-auto w-full" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+                        {isClient && (
+                        <>
                         <svg ref={svgRef} className="w-full h-full" viewBox="0 0 300 300">
                              {/* Connecting line */}
                             <motion.path
@@ -128,6 +135,8 @@ const WordCircleGame = () => {
                                 </motion.div>
                             );
                         })}
+                        </>
+                        )}
                     </div>
 
                     {/* Words List */}

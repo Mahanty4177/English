@@ -22,7 +22,7 @@ const WordCircleGame = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
 
-    const svgRef = useRef<SVGSVGElement>(null);
+    const gameContainerRef = useRef<HTMLDivElement>(null);
     const letterPositions = useRef<Array<{ x: number; y: number }>>([]);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const [isClient, setIsClient] = useState(false);
@@ -34,7 +34,6 @@ const WordCircleGame = () => {
     const currentWord = useMemo(() => path.map(i => level.letters[i]).join(''), [path, level.letters]);
     
     useEffect(() => {
-        // Reset game on level change
         setFoundWords([]);
         resetCurrentAttempt();
     }, [currentLevelIndex]);
@@ -73,16 +72,17 @@ const WordCircleGame = () => {
     };
 
     const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
-        if (svgRef.current) {
-            const rect = svgRef.current.getBoundingClientRect();
+        if (gameContainerRef.current) {
+            const rect = gameContainerRef.current.getBoundingClientRect();
             const touch = 'touches' in e ? e.touches[0] : null;
             const clientX = touch ? touch.clientX : (e as React.MouseEvent).clientX;
             const clientY = touch ? touch.clientY : (e as React.MouseEvent).clientY;
 
-            setMousePos({
-                x: clientX - rect.left,
-                y: clientY - rect.top,
-            });
+            // Scale mouse position to the SVG viewBox (300x300)
+            const x = (clientX - rect.left) / rect.width * 300;
+            const y = (clientY - rect.top) / rect.height * 300;
+
+            setMousePos({ x, y });
         }
     };
     
@@ -99,16 +99,17 @@ const WordCircleGame = () => {
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                     {/* Game Circle */}
                     <div 
+                        ref={gameContainerRef}
                         className="relative aspect-square max-w-[300px] sm:max-w-[400px] mx-auto w-full touch-none" 
                         onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
                         onTouchMove={handleMouseMove} onTouchEnd={handleMouseUp}
                     >
                         {isClient && (
                         <>
-                        <svg ref={svgRef} className="w-full h-full" viewBox="0 0 300 300">
+                        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 300">
                              {/* Connecting line */}
                             <motion.path
-                                d={path.map((p, i) => `${i === 0 ? 'M' : 'L'} ${letterPositions.current[p]?.x || 0} ${letterPositions.current[p]?.y || 0}`).join(' ') + (isDragging && mousePos.x ? ` L ${mousePos.x} ${mousePos.y}` : '')}
+                                d={path.map((p, i) => `${i === 0 ? 'M' : 'L'} ${letterPositions.current[p]?.x || 0} ${letterPositions.current[p]?.y || 0}`).join(' ') + (isDragging && path.length > 0 ? ` L ${mousePos.x} ${mousePos.y}` : '')}
                                 stroke="hsl(var(--primary))"
                                 strokeWidth="3"
                                 fill="none"
@@ -130,10 +131,9 @@ const WordCircleGame = () => {
                                     key={i}
                                     className="absolute w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-800 border-2 border-amber-300/40 flex items-center justify-center text-xl sm:text-2xl font-bold text-amber-200 cursor-pointer select-none"
                                     style={{
-                                        left: x,
-                                        top: y,
-                                        translateX: '-50%',
-                                        translateY: '-50%',
+                                        left: `${x / 3}%`,
+                                        top: `${y / 3}%`,
+                                        transform: 'translate(-50%, -50%)',
                                     }}
                                     onMouseDown={() => handleMouseDown(i)}
                                     onMouseEnter={() => handleMouseEnter(i)}

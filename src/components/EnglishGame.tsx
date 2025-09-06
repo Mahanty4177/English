@@ -46,7 +46,7 @@ export default function EnglishGame() {
           A Shelf of Classics
         </h2>
         <p className="text-center text-gray-300 mt-2 mb-8">
-          A tribute to the stories and lessons you've shared. Click on a book to see the title.
+          A tribute to the stories and lessons you've shared with me. Click on a book to see the title.
         </p>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
@@ -92,4 +92,3 @@ export default function EnglishGame() {
 // .transform-style-3d { transform-style: preserve-3d; }
 // .backface-hidden { backface-visibility: hidden; }
 // .rotate-y-180 { transform: rotateY(180deg); }
-

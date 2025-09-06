@@ -43,9 +43,9 @@ const generateEnglishEasterEggsPrompt = ai.definePrompt({
   name: 'generateEnglishEasterEggsPrompt',
   input: {schema: GenerateEnglishEasterEggsInputSchema},
   output: {schema: GenerateEnglishEasterEggsOutputSchema},
-  prompt: `You are a creative assistant helping to generate engaging Easter egg content related to English literature and language.
+  prompt: `You are a creative assistant helping me generate engaging Easter egg content related to English literature and language for my home tutor.
 
-  Generate {{numberOfEasterEggs}} unique Easter eggs containing literary jokes, famous quotes, or messages that would be appreciated by an English teacher named Subrata sir. The generated content should be suitable to be hidden on a website as Easter eggs.
+  Generate {{numberOfEasterEggs}} unique Easter eggs containing literary jokes, famous quotes, or messages that would be appreciated by my English teacher named Subrata sir. The generated content should be suitable to be hidden on a website as Easter eggs.
 
   Do not address him as "Mr. Das" or "Subrata". Always refer to him as "Subrata sir". 
   

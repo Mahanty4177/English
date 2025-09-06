@@ -1,1 +1,1 @@
-import '@/ai/flows/generate-physics-easter-eggs.ts';
+import '@/ai/flows/generate-english-easter-eggs.ts';

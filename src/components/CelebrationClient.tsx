@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Atom, FlaskConical, Beaker, Orbit, Lightbulb, BrainCircuit, Gift } from 'lucide-react';
+import { Book, Pen, Quote, Scroll, Feather, Library, Gift } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -19,12 +19,12 @@ interface CelebrationClientProps {
 }
 
 const icons = [
-  { Icon: Atom, color: 'text-sky-300' },
-  { Icon: FlaskConical, color: 'text-pink-400' },
+  { Icon: Book, color: 'text-sky-300' },
+  { Icon: Pen, color: 'text-pink-400' },
   { Icon: Gift, color: 'text-amber-300' },
-  { Icon: Orbit, color: 'text-green-400' },
-  { Icon: Lightbulb, color: 'text-orange-400' },
-  { Icon: BrainCircuit, color: 'text-indigo-400' },
+  { Icon: Quote, color: 'text-green-400' },
+  { Icon: Feather, color: 'text-orange-400' },
+  { Icon: Library, color: 'text-indigo-400' },
 ];
 
 const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
@@ -55,7 +55,7 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
           className="text-4xl md:text-6xl font-extrabold font-headline tracking-tight drop-shadow-lg"
         >
           Happy Teacher's Day,
-          <span className="block text-3xl md:text-5xl mt-2 text-amber-300">Pallab Sir ✨</span>
+          <span className="block text-3xl md:text-5xl mt-2 text-amber-300">Subrata Sir ✨</span>
         </motion.h1>
 
         <motion.p
@@ -102,7 +102,7 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
           >
             <h2 className="text-2xl font-semibold font-headline text-primary">A Personal Tribute</h2>
             <p className="mt-4 text-gray-200 leading-relaxed">
-              Sir, you have made physics come alive for me. Your guidance and support inspire me every day. Thank you for igniting my curiosity and illuminating the universe to me. Click on the floating icons to find some hidden surprises!
+              Sir, you have made English come alive for me. Your guidance and support inspire me every day. Thank you for igniting my curiosity and opening up the world of literature to me. Click on the floating icons to find some hidden surprises!
             </p>
              <div className="mt-6 flex gap-3 flex-wrap">
               <Button
@@ -158,7 +158,7 @@ const CelebrationClient = ({ easterEggs }: CelebrationClientProps) => {
                     </DialogTrigger>
                      <DialogContent className="bg-[#08102a]/80 backdrop-blur-xl border-violet-400/30 text-white">
                       <DialogHeader>
-                        <DialogTitle className="text-primary font-headline">A Little Physics Fun!</DialogTitle>
+                        <DialogTitle className="text-primary font-headline">A Little Literary Fun!</DialogTitle>
                         <DialogDescription className="pt-4 text-base text-gray-200">
                           {egg}
                         </DialogDescription>

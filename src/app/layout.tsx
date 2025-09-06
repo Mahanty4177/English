@@ -5,8 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Inter, Poppins } from 'next/font/google';
 
 export const metadata: Metadata = {
-  title: "Tribute to Pallab",
-  description: "A special Teacher's Day tribute to Pallab Mukherjee.",
+  title: "Tribute to Subrata Sir",
+  description: "A special Teacher's Day tribute to Subrata Sir.",
 };
 
 const inter = Inter({

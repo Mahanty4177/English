@@ -2,17 +2,17 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { generatePhysicsEasterEggs } from '@/ai/flows/generate-physics-easter-eggs';
+import { generateEnglishEasterEggs } from '@/ai/flows/generate-english-easter-eggs';
 import PhysicsBackground from '@/components/PhysicsBackground';
 import CelebrationClient from '@/components/CelebrationClient';
 import MusicPlayer from '@/components/MusicPlayer';
-import type { GeneratePhysicsEasterEggsOutput } from '@/ai/flows/generate-physics-easter-eggs';
+import type { GenerateEnglishEasterEggsOutput } from '@/ai/flows/generate-english-easter-eggs';
 import { Loader } from 'lucide-react';
 import ScriptHelpers from '@/components/ScriptHelpers';
-import PhysicsGame from '@/components/PhysicsGame';
+import EnglishGame from '@/components/EnglishGame';
 
 export default function Home() {
-  const [easterEggData, setEasterEggData] = useState<GeneratePhysicsEasterEggsOutput>({ easterEggs: [] });
+  const [easterEggData, setEasterEggData] = useState<GenerateEnglishEasterEggsOutput>({ easterEggs: [] });
   const [isLoading, setIsLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
 
@@ -20,7 +20,7 @@ export default function Home() {
     setIsClient(true);
     const fetchEasterEggs = async () => {
       try {
-        const data = await generatePhysicsEasterEggs({ numberOfEasterEggs: 6 });
+        const data = await generateEnglishEasterEggs({ numberOfEasterEggs: 6 });
         setEasterEggData(data);
       } catch (error) {
         console.error("Failed to fetch easter eggs:", error);
@@ -46,7 +46,7 @@ export default function Home() {
         ) : (
           <>
             <CelebrationClient easterEggs={easterEggData.easterEggs} />
-            <PhysicsGame />
+            <EnglishGame />
           </>
         )}
       </main>

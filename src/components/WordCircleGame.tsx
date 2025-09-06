@@ -78,13 +78,26 @@ const WordCircleGame = () => {
             const clientX = touch ? touch.clientX : (e as React.MouseEvent).clientX;
             const clientY = touch ? touch.clientY : (e as React.MouseEvent).clientY;
 
-            // Scale mouse position to the SVG viewBox (300x300)
             const x = (clientX - rect.left) / rect.width * 300;
             const y = (clientY - rect.top) / rect.height * 300;
 
             setMousePos({ x, y });
         }
     };
+    
+    // Pre-calculate letter positions
+    useMemo(() => {
+        const numLetters = level.letters.length;
+        const radius = 120;
+        const center = 150;
+        letterPositions.current = Array.from({ length: numLetters }, (_, i) => {
+            const angle = (i / numLetters) * 2 * Math.PI - Math.PI / 2;
+            return {
+                x: center + radius * Math.cos(angle),
+                y: center + radius * Math.sin(angle),
+            };
+        });
+    }, [level.letters]);
     
     return (
         <section className="w-full max-w-5xl mx-auto py-12 px-4">
@@ -120,24 +133,24 @@ const WordCircleGame = () => {
                             />
                         </svg>
                         {level.letters.map((letter, i) => {
-                            const angle = (i / level.letters.length) * 2 * Math.PI - Math.PI / 2;
-                            const radius = 120;
-                            const x = 150 + radius * Math.cos(angle);
-                            const y = 150 + radius * Math.sin(angle);
-                            letterPositions.current[i] = { x, y };
+                            const pos = letterPositions.current[i];
+                            if (!pos) return null;
                             
                             return (
                                 <motion.div
                                     key={i}
                                     className="absolute w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-800 border-2 border-amber-300/40 flex items-center justify-center text-xl sm:text-2xl font-bold text-amber-200 cursor-pointer select-none"
                                     style={{
-                                        left: `${x / 3}%`,
-                                        top: `${y / 3}%`,
+                                        left: `calc(${pos.x / 3}%)`,
+                                        top:  `calc(${pos.y / 3}%)`,
                                         transform: 'translate(-50%, -50%)',
                                     }}
                                     onMouseDown={() => handleMouseDown(i)}
                                     onMouseEnter={() => handleMouseEnter(i)}
-                                    onTouchStart={() => handleMouseDown(i)}
+                                    onTouchStart={(e) => {
+                                        e.preventDefault();
+                                        handleMouseDown(i)
+                                    }}
                                     whileHover={{ scale: 1.1, boxShadow: '0 0 15px hsl(var(--primary))' }}
                                     whileTap={{ scale: 0.9 }}
                                 >

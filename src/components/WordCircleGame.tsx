@@ -22,7 +22,7 @@ const WordCircleGame = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
 
-    const gameContainerRef = useRef<HTMLDivElement>(null);
+    const svgRef = useRef<SVGSVGElement>(null);
     const letterPositions = useRef<Array<{ x: number; y: number }>>([]);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const [isClient, setIsClient] = useState(false);
@@ -37,19 +37,42 @@ const WordCircleGame = () => {
         setFoundWords([]);
         resetCurrentAttempt();
     }, [currentLevelIndex]);
+    
+    // Pre-calculate letter positions
+    useMemo(() => {
+        const numLetters = level.letters.length;
+        const radius = 120;
+        const center = 150;
+        letterPositions.current = Array.from({ length: numLetters }, (_, i) => {
+            const angle = (i / numLetters) * 2 * Math.PI - Math.PI / 2;
+            return {
+                x: center + radius * Math.cos(angle),
+                y: center + radius * Math.sin(angle),
+            };
+        });
+    }, [level.letters]);
 
-    const handleMouseDown = (index: number) => {
+
+    const handleInteractionStart = (index: number, e: React.MouseEvent | React.TouchEvent) => {
+        e.preventDefault();
         setIsDragging(true);
         setPath([index]);
     };
 
-    const handleMouseEnter = (index: number) => {
-        if (isDragging && !path.includes(index)) {
-            setPath(prevPath => [...prevPath, index]);
-        }
+    const handleInteractionMove = (e: React.MouseEvent | React.TouchEvent) => {
+        if (!isDragging || !svgRef.current) return;
+        e.preventDefault();
+
+        const svgPoint = svgRef.current.createSVGPoint();
+        const touch = 'touches' in e ? e.touches[0] : null;
+        svgPoint.x = touch ? touch.clientX : (e as React.MouseEvent).clientX;
+        svgPoint.y = touch ? touch.clientY : (e as React.MouseEvent).clientY;
+
+        const transformedPoint = svgPoint.matrixTransform(svgRef.current.getScreenCTM()?.inverse());
+        setMousePos({ x: transformedPoint.x, y: transformedPoint.y });
     };
-    
-    const handleMouseUp = () => {
+
+    const handleInteractionEnd = () => {
         if (!isDragging) return;
 
         setIsDragging(false);
@@ -65,39 +88,17 @@ const WordCircleGame = () => {
         }, 500);
     };
 
+    const handleEnterLetter = (index: number) => {
+        if (isDragging && !path.includes(index)) {
+            setPath(prevPath => [...prevPath, index]);
+        }
+    }
+
     const resetCurrentAttempt = () => {
         setPath([]);
         setIsDragging(false);
         setFeedback(null);
     };
-
-    const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
-        if (gameContainerRef.current) {
-            const rect = gameContainerRef.current.getBoundingClientRect();
-            const touch = 'touches' in e ? e.touches[0] : null;
-            const clientX = touch ? touch.clientX : (e as React.MouseEvent).clientX;
-            const clientY = touch ? touch.clientY : (e as React.MouseEvent).clientY;
-
-            const x = (clientX - rect.left) / rect.width * 300;
-            const y = (clientY - rect.top) / rect.height * 300;
-
-            setMousePos({ x, y });
-        }
-    };
-    
-    // Pre-calculate letter positions
-    useMemo(() => {
-        const numLetters = level.letters.length;
-        const radius = 120;
-        const center = 150;
-        letterPositions.current = Array.from({ length: numLetters }, (_, i) => {
-            const angle = (i / numLetters) * 2 * Math.PI - Math.PI / 2;
-            return {
-                x: center + radius * Math.cos(angle),
-                y: center + radius * Math.sin(angle),
-            };
-        });
-    }, [level.letters]);
     
     return (
         <section className="w-full max-w-5xl mx-auto py-12 px-4">
@@ -112,14 +113,19 @@ const WordCircleGame = () => {
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                     {/* Game Circle */}
                     <div 
-                        ref={gameContainerRef}
-                        className="relative aspect-square max-w-[300px] sm:max-w-[400px] mx-auto w-full touch-none" 
-                        onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
-                        onTouchMove={handleMouseMove} onTouchEnd={handleMouseUp}
+                        className="relative aspect-square max-w-[300px] sm:max-w-[400px] mx-auto w-full touch-none"
                     >
                         {isClient && (
-                        <>
-                        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 300">
+                        <svg 
+                            ref={svgRef}
+                            className="w-full h-full" 
+                            viewBox="0 0 300 300"
+                            onMouseMove={handleInteractionMove}
+                            onMouseUp={handleInteractionEnd}
+                            onMouseLeave={handleInteractionEnd}
+                            onTouchMove={handleInteractionMove}
+                            onTouchEnd={handleInteractionEnd}
+                        >
                              {/* Connecting line */}
                             <motion.path
                                 d={path.map((p, i) => `${i === 0 ? 'M' : 'L'} ${letterPositions.current[p]?.x || 0} ${letterPositions.current[p]?.y || 0}`).join(' ') + (isDragging && path.length > 0 ? ` L ${mousePos.x} ${mousePos.y}` : '')}
@@ -131,34 +137,42 @@ const WordCircleGame = () => {
                                 initial={{ pathLength: 0 }}
                                 animate={{ pathLength: 1 }}
                             />
+                        
+                            {level.letters.map((letter, i) => {
+                                const pos = letterPositions.current[i];
+                                if (!pos) return null;
+                                const isSelected = path.includes(i);
+                                
+                                return (
+                                    <g 
+                                        key={i} 
+                                        transform={`translate(${pos.x}, ${pos.y})`}
+                                        onMouseDown={(e) => handleInteractionStart(i, e)}
+                                        onMouseEnter={() => handleEnterLetter(i)}
+                                        onTouchStart={(e) => handleInteractionStart(i, e)}
+                                        className="cursor-pointer"
+                                    >
+                                        <motion.circle
+                                            r="24"
+                                            fill={isSelected ? "hsl(var(--primary) / 0.3)" : "#1E293B"} // slate-800
+                                            stroke="hsl(var(--primary) / 0.4)"
+                                            strokeWidth="2"
+                                            whileHover={{ scale: 1.1, filter: 'drop-shadow(0 0 8px hsl(var(--primary)))' }}
+                                            whileTap={{ scale: 0.9 }}
+                                            transition={{ duration: 0.1 }}
+                                        />
+                                        <text
+                                            textAnchor="middle"
+                                            dy="0.35em"
+                                            fill="hsl(var(--primary))"
+                                            className="text-2xl font-bold select-none pointer-events-none"
+                                        >
+                                            {letter}
+                                        </text>
+                                    </g>
+                                );
+                            })}
                         </svg>
-                        {level.letters.map((letter, i) => {
-                            const pos = letterPositions.current[i];
-                            if (!pos) return null;
-                            
-                            return (
-                                <motion.div
-                                    key={i}
-                                    className="absolute w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-800 border-2 border-amber-300/40 flex items-center justify-center text-xl sm:text-2xl font-bold text-amber-200 cursor-pointer select-none"
-                                    style={{
-                                        left: `calc(${pos.x / 3}%)`,
-                                        top:  `calc(${pos.y / 3}%)`,
-                                        transform: 'translate(-50%, -50%)',
-                                    }}
-                                    onMouseDown={() => handleMouseDown(i)}
-                                    onMouseEnter={() => handleMouseEnter(i)}
-                                    onTouchStart={(e) => {
-                                        e.preventDefault();
-                                        handleMouseDown(i)
-                                    }}
-                                    whileHover={{ scale: 1.1, boxShadow: '0 0 15px hsl(var(--primary))' }}
-                                    whileTap={{ scale: 0.9 }}
-                                >
-                                    {letter}
-                                </motion.div>
-                            );
-                        })}
-                        </>
                         )}
                     </div>
 
